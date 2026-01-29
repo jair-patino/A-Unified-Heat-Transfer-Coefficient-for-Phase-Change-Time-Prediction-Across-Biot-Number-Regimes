@@ -24,8 +24,8 @@ The paper presents a novel analytical model for predicting phase change times in
 - **Rapid Optimization**: Enables parameter sweeps without numerical simulations
 
 ## Repository Structure
-├── paper/ # LaTeX source for the manuscript
-├── scripts/ # Python scripts for figures and simulations
-├── data/ # Input data and simulation results
-├── docs/ # Experimental protocol and supplementary material
-└── tests/ # Unit tests for model validation
+- paper/ # LaTeX source for the manuscript
+- scripts/ # Python scripts for figures and simulations
+- data/ # Input data and simulation results
+- docs/ # Experimental protocol and supplementary material
+- tests/ # Unit tests for model validation
