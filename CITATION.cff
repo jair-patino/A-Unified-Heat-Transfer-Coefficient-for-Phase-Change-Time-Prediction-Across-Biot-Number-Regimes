@@ -5,7 +5,18 @@ authors:
   - given-names: Jair
     family-names: Patiño B.
     orcid: "https://orcid.org/0009-0005-8870-0320"
+    affiliation: "Independent Researcher"
 version: 1.0.0
 date-released: 2026-01-29
 license: MIT
+license-url: https://opensource.org/licenses/MIT
 repository-code: "https://github.com/jair-patino/A-Unified-Heat-Transfer-Coefficient-for-Phase-Change-Time-Prediction-Across-Biot-Number-Regimes"
+keywords:
+  - heat transfer
+  - phase change
+  - Stefan problem
+  - Biot number
+  - supercooling
+  - thermal energy storage
+abstract: |
+  Accurate prediction of phase change times governs efficiency in applications ranging from thermal energy storage to cryopreservation and climate modeling. While exact solutions require numerical methods, existing analytical approximations fail in the intermediate regime where internal and external thermal resistances are comparable (Bi ∼ 1). Here, we bridge this gap by deriving a closed-form expression valid for 0.01 ≤ Bi ≤ 2. Our formulation introduces a physically motivated global heat transfer coefficient U derived from first-principles thermal resistance analysis, with geometrically-derived Φ factors for planar, cylindrical, and spherical geometries. The model maintains errors below 5% for Bi ≤ 1 and below 15% for Bi = 2 compared to numerical solutions of the Stefan problem, surpassing previous lumped-capacitance extensions limited to Bi < 0.2. For water solidification with supercooling, the model quantitatively captures the non-monotonic relationship with minimum solidification time near −12°C, explaining experimental observations.
