@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes"
+authors:
+  - given-names: Jair
+    family-names: Patiño B.
+    orcid: "https://orcid.org/0009-0005-8870-0320"
+version: 1.0.0
+date-released: 2026-01-29
+license: MIT
+repository-code: "https://github.com/jair-patino/A-Unified-Heat-Transfer-Coefficient-for-Phase-Change-Time-Prediction-Across-Biot-Number-Regimes"
