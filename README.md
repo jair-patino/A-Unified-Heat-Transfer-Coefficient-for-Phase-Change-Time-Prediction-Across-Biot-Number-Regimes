@@ -1,24 +1,24 @@
-# Unified Phase Change Time Prediction Model
+# A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes
 
-This repository contains the code and data for the paper:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![LaTeX](https://img.shields.io/badge/LaTeX-Article-brightgreen)
 
-**"A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes"**  
-*Jair Patino B., 2026*  
-*(Submitted to Physical Review Applied)*
+##  Overview
 
-## Abstract
-Accurate prediction of phase change times governs efficiency in applications ranging from thermal energy storage to cryopreservation. While exact solutions require numerical methods, existing analytical approximations fail in the intermediate regime where internal and external thermal resistances are comparable (Bi ∼ 1). Here, we bridge this gap by deriving a closed-form expression valid for 0.01 ≤ Bi ≤ 2. Our formulation introduces a physically motivated global heat transfer coefficient U derived from first-principles thermal resistance analysis, with geometrically-derived Φ factors for planar, cylindrical, and spherical geometries.
+This repository contains the complete code, data, and documentation for the research paper:
 
-## Features
-- Unified analytical model bridging lumped capacitance and moving boundary formulations
-- Closed-form solution with <5% error for Bi ≤ 1 and <15% error at Bi = 2
-- Quantitative prediction of supercooling effects in water solidification
-- Rapid parameter sweeps for system optimization without full numerical simulations
+> **"A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes"**  
+> **Author:** Jair Patiño B. (Independent Researcher)  
+> **Date:** January 2026  
+> **Status:** Submitted to Applied Physics Letters (APS)
 
-## Installation
+The paper presents a novel analytical model for predicting phase change times in materials, valid across a wide range of Biot numbers (0.01 ≤ Bi ≤ 2). The model bridges the gap between lumped capacitance and moving boundary formulations, introducing a physically-motivated global heat transfer coefficient derived from thermal resistance analysis.
 
-### Using pip:
-```bash
-git clone https://github.com/jairpatino/phase-change-model.git
-cd phase-change-model
-pip install -r requirements.txt
+##  Key Contributions
+
+- **Unified Model**: Closed-form expression valid for 0.01 ≤ Bi ≤ 2
+- **High Accuracy**: <5% error for Bi ≤ 1, <15% error at Bi = 2
+- **Geometric Flexibility**: Derived Φ factors for planar, cylindrical, and spherical geometries
+- **Supercooling Prediction**: Captures non-monotonic solidification time in water with minimum near -12°C
+- **Rapid Optimization**: Enables parameter sweeps without numerical simulations
