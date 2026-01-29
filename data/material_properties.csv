@@ -1,4 +1,0 @@
-material,density (kg/m3),specific_heat (J/kgK),latent_heat (J/kg),thermal_conductivity (W/mK)
-water,1000,4186,334000,0.6
-paraffin,900,2500,200000,0.2
-gallium,6093,381,80160,40.6
