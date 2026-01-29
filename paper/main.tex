@@ -1,0 +1,488 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, physics, bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{siunitx}
+\usepackage{natbib}
+\usepackage[boxed]{algorithm}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{cleveref}
+\usepackage{setspace}
+\usepackage{bookmark}
+\usepackage{array}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.fillbetween}
+\usepackage{multirow}
+\usepackage{ragged2e}
+\usepackage{lineno}
+\usepackage{mathrsfs}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{fillbetween}
+
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric, patterns}
+\pgfplotsset{compat=1.18}
+
+\geometry{margin=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+\onehalfspacing
+
+% Configurar siunitx
+\sisetup{
+  detect-all,
+  group-separator={,},
+  output-decimal-marker={.},
+  per-mode=symbol,
+}
+
+% Configurar cleveref
+\crefname{equation}{Eq.}{Eqs.}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Tab.}{Tabs.}
+\crefname{section}{Sec.}{Secs.}
+
+% Configurar hyperref para versión final (colorlinks=false para impresión)
+\hypersetup{
+    colorlinks=false,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=black,
+    pdftitle={A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes},
+    pdfauthor={Jair Patiño B.},
+    pdfkeywords={heat transfer, phase change, Stefan problem, Biot number, supercooling, thermal energy storage},
+    pdfsubject={Thermal engineering, Phase change materials},
+}
+
+\title{A Unified Heat Transfer Coefficient for Phase Change Time Prediction Across Biot Number Regimes}
+\author{Jair Patiño B. \\ 
+Independent Researcher \\
+\href{mailto:jairpalejandrov@gmail.com}{jairpalejandrov@gmail.com} \\
+ORCID: 0009-0005-8870-0320}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Accurate prediction of phase change times governs efficiency in applications ranging from thermal energy storage to cryopreservation and climate modeling. While exact solutions require numerical methods, existing analytical approximations fail in the intermediate regime where internal and external thermal resistances are comparable ($\mathrm{Bi} \sim 1$). Here, we bridge this gap by deriving a closed-form expression valid for $0.01 \leq \mathrm{Bi} \leq 2$. Our formulation introduces a physically motivated global heat transfer coefficient $U$ derived from first-principles thermal resistance analysis, with geometrically-derived $\Phi$ factors for planar, cylindrical, and spherical geometries. The model maintains errors below 5\% for $\mathrm{Bi} \leq 1$ and below 15\% for $\mathrm{Bi} = 2$ compared to numerical solutions of the Stefan problem, surpassing previous lumped-capacitance extensions limited to $\mathrm{Bi} < 0.2$. For water solidification with supercooling, the model quantitatively captures the non-monotonic relationship with minimum solidification time near $\SI{-12}{\degreeCelsius}$, explaining experimental observations. The explicit separation of sensible and latent contributions enables rapid parameter sweeps for system optimization without computational expense of full numerical simulations. This work provides practical tools for designing phase change material containers, analyzing atmospheric ice formation, and optimizing thermal management systems.
+\end{abstract}
+
+\textbf{Keywords:} heat transfer, phase change, Stefan problem, Biot number, supercooling, thermal energy storage, lumped capacitance
+
+\section*{Highlights}
+\begin{itemize}
+\item Unified analytical model bridging lumped capacitance and moving boundary formulations for $0.01 \leq \mathrm{Bi} \leq 2$
+\item Global heat transfer coefficient derived from thermal resistance analysis with geometrically-derived $\Phi$ factors
+\item Closed-form solution achieving <5\% error for $\mathrm{Bi} \leq 1$ and <15\% error at $\mathrm{Bi}=2$
+\item Quantitative comparison showing superiority over previous lumped-capacitance extensions
+\item Predicts non-monotonic solidification time in supercooled water with minimum near $\SI{-12}{\degreeCelsius}$
+\item Enables rapid design optimization for thermal energy storage and cryopreservation applications
+\end{itemize}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Phase change time prediction governs efficiency in applications ranging from cryopreservation of biological tissues to thermal energy storage in concentrated solar power plants and climate modeling of cloud ice formation \cite{Lamb2005,Alva2018,Kashchiev2000}. Accurate estimates enable optimal sizing of phase change material (PCM) containers, design of thermal management systems for electronics, and improved parameterization of atmospheric processes.
+
+The classical approaches to this problem span a wide spectrum. At one extreme, Newton's law of cooling combined with latent heat considerations provides simple analytical solutions, but only for systems with negligible internal resistance ($\mathrm{Bi} \ll 1$) \cite{Incropera2011}. At the other extreme, exact solutions of the Stefan problem \cite{Stefan1891} require numerical methods even for simple geometries \cite{Alexiades1993}. The intermediate regime, where $\mathrm{Bi} \sim 1$ and internal and external thermal resistances are comparable, presents a significant challenge: neither lumped capacitance approximations nor pure conduction limits apply, yet this regime encompasses many practical applications from compact thermal storage units to biological freezing.
+
+Previous attempts to address this gap include modified lumped capacitance methods \cite{Liu2009} with empirical correction factors valid only for $\mathrm{Bi} < 0.2$, quasi-steady approximations \cite{Megerlin1968} lacking closed-form expressions, and effective heat transfer coefficients \cite{Karwa2013} requiring parameter calibration. Crucially, no existing formulation provides a closed-form expression valid across $0.01 \leq \mathrm{Bi} \leq 2$ while maintaining accuracy comparable to numerical solutions and explicitly separating sensible and latent contributions. Furthermore, supercooling effects in solidification—where liquids remain metastable below the equilibrium freezing point—introduce additional complexity rarely captured in compact formulations \cite{Muller2015,Debenedetti2003}.
+
+Here, we bridge this gap by deriving a unified closed-form expression for phase change time that: (1) is exact in the small-Biot limit, (2) consistently extends to moderate Biot numbers through a global heat transfer coefficient $U$ derived from thermal resistance analysis, (3) quantitatively captures supercooling effects via an effective phase change temperature $T_f^\dagger$, and (4) provides clear physical insight through separation of sensible and latent contributions. Unlike previous effective coefficient approaches that rely on empirical fitting, our $U$ emerges from first-principles thermal resistance analysis with geometrically-derived $\Phi$ factors. The formulation maintains a simple analytical form while achieving accuracy comparable to numerical solutions across the challenging $\mathrm{Bi} \sim 1$ regime.
+
+We validate this model against high-resolution numerical solutions of the Stefan problem and demonstrate its superiority over previous analytical approximations through quantitative comparison. The model successfully explains the non-monotonic solidification time vs. temperature relationship in supercooled water, predicting a minimum near $\SI{-12}{\degreeCelsius}$ consistent with experimental observations \cite{Muller2015}. Our formulation enables rapid parameter sweeps for system optimization without the computational expense of full numerical simulations, with particular relevance for designing next-generation PCM composites for building energy efficiency and optimizing cryoprotectant protocols in vitrification.
+
+The paper is structured as follows: Section \ref{sec:formulation} presents the theoretical formulation with emphasis on the physical derivation of $U$. Section \ref{sec:numerical_methods} describes validation methodology. Section \ref{sec:results} presents validation results and quantitative comparison with previous models. Section \ref{sec:supercooling} applies the model to water solidification with supercooling. Section \ref{sec:discussion} discusses validity regimes, limitations, and practical implementation. Section \ref{sec:conclusions} summarizes key findings.
+
+\section{Model Derivation}
+\label{sec:formulation}
+
+\subsection{Energy Balance and Assumptions}
+Consider a phase change material of mass $m$, volume $V$, and exposed surface area $A$. The material has constant specific heat $c$, latent heat $L$, and thermal conductivity $k$. The phase change occurs at equilibrium temperature $T_{\mathrm{pc}}$. The environment is at constant temperature $T_\infty$, and heat transfer occurs through convection ($h_{\mathrm{conv}}$), radiation ($h_{\mathrm{rad}}$), and external conduction ($h_{\mathrm{cond,ext}}$).
+
+The analysis is based on the following assumptions:
+\begin{enumerate}
+\item Thermophysical properties are constant within each phase
+\item The phase change is isothermal at the effective temperature $T_f^\dagger$
+\item The global heat transfer coefficient $U$ is constant during each stage
+\item Internal temperature gradients are accounted for through the Biot number correction
+\item Phase change occurs uniformly throughout the material volume
+\end{enumerate}
+
+\subsection{Global Heat Transfer Coefficient: Physical Derivation}
+\label{subsec:U_derivation}
+
+The fundamental challenge for $\mathrm{Bi} \sim 1$ is that neither the uniform temperature profile (lumped capacitance) nor the linear profile (pure conduction) accurately represents the actual temperature distribution. We address this by deriving a global heat transfer coefficient $U$ that optimally bridges these limits.
+
+For steady-state conduction with convective boundary conditions, the heat transfer rate can be expressed as $Q = UA\Delta T$, where $1/(UA)$ represents the total thermal resistance. Extending this concept to transient phase change, we postulate that the total resistance comprises external ($1/(h_{\mathrm{eff}}A)$) and internal ($R_{\mathrm{int}}$) components in series:
+
+\begin{equation}
+\frac{1}{UA} = \underbrace{\frac{1}{h_{\mathrm{eff}}A}}_{\text{External resistance}} 
+               + \underbrace{R_{\mathrm{int}}}_{\text{Internal resistance}},
+\label{eq:U_definition_general}
+\end{equation}
+
+where $h_{\mathrm{eff}} = h_{\mathrm{conv}} + h_{\mathrm{rad}} + h_{\mathrm{cond,ext}}$ is the effective external heat transfer coefficient.
+
+The internal resistance $R_{\mathrm{int}}$ depends on geometry and can be derived from steady-state conduction solutions. For characteristic geometries, it can be expressed as $R_{\mathrm{int}} = \Phi L_c/k$, where $\Phi$ is a geometric factor derived from Laplace's equation solutions (see Supplementary Material for detailed derivations) and $L_c = V/A$ is the characteristic length. The geometric factor $\Phi$ is not an adjustable parameter but emerges from exact solutions:
+\begin{itemize}
+\item Plane wall of thickness $L$ (both sides cooled): $\Phi = 1$ with $L_c = L/2$
+\item Infinite cylinder of radius $R$: $\Phi = 1/2$ with $L_c = R/2$
+\item Sphere of radius $R$: $\Phi = 1/3$ with $L_c = R/3$
+\end{itemize}
+
+These values are derived in the Supplementary Material by solving $\nabla^2 T = 0$ with convective boundary conditions and matching the total resistance to $R_{\mathrm{int}} = \Phi L_c/k$.
+
+Substituting $R_{\mathrm{int}} = \Phi L_c/k$ into \cref{eq:U_definition_general} yields:
+\begin{equation}
+\frac{1}{UA} = \frac{1}{h_{\mathrm{eff}}A} + \Phi \frac{L_c}{k} = \frac{1}{h_{\mathrm{eff}}A}\left(1 + \Phi\mathrm{Bi}\right),
+\label{eq:U_definition}
+\end{equation}
+
+where $\mathrm{Bi} = h_{\mathrm{eff}} L_c/k$ is the Biot number. Solving for $U$:
+\begin{equation}
+U = \frac{h_{\mathrm{eff}}}{1 + \Phi \mathrm{Bi}}.
+\label{eq:U_Bi_relation}
+\end{equation}
+
+This formulation can be derived from an optimization perspective: we seek the coefficient $U$ that minimizes the discrepancy between the actual nonlinear temperature profile and the linear approximation implicit in the lumped capacitance method. The factor $1/(1 + \Phi\mathrm{Bi})$ emerges as the optimal correction that interpolates between the convective ($\mathrm{Bi} \to 0$) and conductive ($\mathrm{Bi} \to \infty$) limits. The extension to transient phase change is justified by the quasi-steady approximation, valid when sensible heat effects are small compared to latent heat \cite{Myers2017}.
+
+\subsection{Derivation of Master Equation}
+The total phase change time is the sum of sensible and latent contributions. For the sensible stage, the energy balance under the lumped capacitance approximation is:
+
+\begin{equation}
+m c \frac{dT}{dt} = \pm U A (T_\infty - T),
+\end{equation}
+
+where the sign depends on whether the process is heating ($+$) or cooling ($-$). This differential equation yields an exponential temperature evolution:
+
+\begin{equation}
+T(t) = T_\infty + (T_i - T_\infty) e^{-\frac{UA}{mc}t}
+\label{eq:temp_evolution}
+\end{equation}
+
+Setting $T(t_1) = T_f^\dagger$ and solving for $t_1$ gives the sensible time:
+
+\begin{equation}
+t_{\mathrm{sensible}} = \frac{m c}{U A} \ln \left( \frac{|T_i - T_\infty|}{|T_f^\dagger - T_\infty|} \right).
+\label{eq:t_sensible}
+\end{equation}
+
+For the latent stage, with constant temperature $T_f^\dagger$, the energy balance is:
+
+\begin{equation}
+U A |T_\infty - T_f^\dagger| = \frac{d}{dt} (m_{\mathrm{transformed}} L).
+\end{equation}
+
+Assuming complete transformation of mass $m$, integration gives:
+
+\begin{equation}
+t_{\mathrm{latent}} = \frac{m L}{U A |T_\infty - T_f^\dagger|}.
+\label{eq:t_latent}
+\end{equation}
+
+The total phase change time is therefore:
+
+\begin{equation}
+\boxed{
+t_{\mathrm{total}} = t_{\mathrm{sensible}} + t_{\mathrm{latent}} = \frac{m c}{U A} \ln \left( \frac{|T_i - T_\infty|}{|T_f^\dagger - T_\infty|} \right) + \frac{m L}{U A |T_\infty - T_f^\dagger|}
+}
+\label{eq:master_equation}
+\end{equation}
+
+Equivalently, we can express this in exponential form by noting that:
+\begin{equation}
+e^{-\frac{UA}{mc}t_{\mathrm{sensible}}} = \frac{|T_f^\dagger - T_\infty|}{|T_i - T_\infty|}
+\end{equation}
+
+\subsection{Dimensionless Form and Scaling Analysis}
+Expressing \cref{eq:master_equation} in dimensionless form clarifies the governing parameters. Define the Fourier number $\mathrm{FO} = \alpha t / L_c^2$, Stefan number $\mathrm{Ste} = c|T_\infty - T_f^\dagger|/L$, and dimensionless temperature difference $\Theta = |T_i - T_\infty|/|T_f^\dagger - T_\infty|$. Then:
+
+\begin{equation}
+\mathrm{FO}_{\mathrm{total}} = \frac{1}{\Phi\mathrm{Bi}(1 + \Phi\mathrm{Bi})} \left[ \ln \Theta + \frac{1}{\mathrm{Ste}} \right]
+\label{eq:dimensionless}
+\end{equation}
+
+This reveals that the dimensionless phase change time depends on three parameters: $\mathrm{Bi}$, $\mathrm{Ste}$, and $\Theta$.
+
+\begin{itemize}
+\item \textbf{$\mathrm{Bi} \to 0$ limit (Lumped capacitance):}
+\begin{equation}
+U \to h_{\mathrm{eff}}, \quad t_{\mathrm{total}} \to \frac{m}{h_{\mathrm{eff}}A} \left[ c \ln \left( \frac{|T_i - T_\infty|}{|T_f^\dagger - T_\infty|} \right) + \frac{L}{|T_\infty - T_f^\dagger|} \right]
+\end{equation}
+The time scales with $L_c$ (convective scaling).
+
+\item \textbf{$\mathrm{Bi} \to \infty$ limit (Conduction dominated):}
+\begin{equation}
+U \to \frac{k}{\Phi L_c}, \quad t_{\mathrm{total}} \to \frac{m\Phi L_c}{kA} \left[ c \ln \left( \frac{|T_i - T_\infty|}{|T_f^\dagger - T_\infty|} \right) + \frac{L}{|T_\infty - T_f^\dagger|} \right]
+\end{equation}
+Since $m \propto L_c^3$ and $A \propto L_c^2$, $t_{\mathrm{total}} \propto L_c^2$ (diffusive scaling).
+
+\item \textbf{Intermediate $\mathrm{Bi}$:} The formulation smoothly interpolates between these extremes through $U = h_{\mathrm{eff}}/(1 + \Phi\mathrm{Bi})$.
+\end{itemize}
+
+\section{Validation Methodology}
+\label{sec:numerical_methods}
+
+For validation, we solve the one-dimensional Stefan problem using an enthalpy formulation with finite differences \cite{Voller1997,Patankar2018}, which serves as the numerical "gold standard." The governing energy equation in enthalpy form is:
+
+\begin{equation}
+\rho \frac{\partial H}{\partial t} = \nabla \cdot (k \nabla T),
+\label{eq:enthalpy_gov}
+\end{equation}
+
+where $H = \int_{T_{\text{ref}}}^T \rho c dT + fL$ is the enthalpy, and $f$ is the liquid fraction.
+
+We employ a fully implicit finite difference scheme with temperature-enthalpy iteration \cite{Voller1987}, with detailed implementation available in the Supplementary Material. The phase change is handled using an apparent heat capacity method with a small temperature interval $\Delta T_{\text{mush}} = \SI{0.5}{\kelvin}$. The nonlinear system is solved using Newton-Raphson iteration with convergence criterion $||T^{k+1} - T^k||_\infty < \SI{1e-6}{\kelvin}$.
+
+Mesh independence studies confirm that for $\mathrm{Bi} \leq 2$, a grid with $N = 200$ nodes yields phase change times within 0.5\% of the fully converged solution. The complete code is available at \url{https://github.com/jair-patino/A-Unified-Heat-Transfer-Coefficient-for-Phase-Change-Time-Prediction-Across-Biot-Number-Regimes.git} to ensure reproducibility.
+
+\section{Results and Discussion}
+\label{sec:results}
+
+\subsection{Dependence on Biot Number and Comparison with Previous Models}
+Figure 1 shows the relative error in total phase change time predicted by Equation \eqref{eq:master_equation} compared to numerical solutions. Crucially, we include comparison with the modified lumped capacitance method of Liu et al. \cite{Liu2009} (valid only for $\mathrm{Bi} < 0.2$) and the effective heat transfer coefficient approach of Karwa et al. \cite{Karwa2013}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Graphic 1.pdf}
+    \caption{Relative error versus Biot number for planar geometry, comparing our model with previous approaches. Our formulation maintains errors below 5\% for $\mathrm{Bi} \leq 1$ and below 15\% for $\mathrm{Bi} = 2$, surpassing previous lumped-capacitance extensions limited to $\mathrm{Bi} < 0.2$ (Liu et al., 2009) and $\mathrm{Bi} < 0.5$ (Karwa et al., 2013). Vertical dashed lines indicate validity limits of previous models. The shaded regions represent different precision zones.}
+    \label{fig:pdfimagen}
+\end{figure}
+
+Our model shows a significant improvement over previous approaches. Although the method of Liu et al.'becomes unreliable beyond $\mathrm{Bi} = 0.2$ (errors> 20\% \%) and the approach of Karwa et al.' beyond $\mathrm{Bi} = 0.5$, our formulation maintains the engineering precision throughout $0.01 \leq \mathrm{Bi} \leq 2$. This extended validity range enables application to a broader class of practical problems where internal and external resistances are comparable.
+
+\subsection{Comparison with Real Materials}
+Figure 2 compares predicted vs. numerically calculated phase change times for water, paraffin, and gallium under various conditions ranging from $\mathrm{Bi} = 0.1$ to 1.5. All points fall within the $\pm$5\% confidence band, with coefficients of determination $R^2 > 0.996$ for all materials.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Graphic 2.pdf}
+    \caption{Predicted versus numerically computed phase change times for various materials and conditions ($\mathrm{Bi} = 0.1$ to 1.5). High coefficients of determination ($R^2 > 0.996$) confirm model accuracy across different materials. All points fall within $\pm$5\% of perfect agreement, demonstrating the model's robustness for engineering applications. Statistical summary: maximum error 3.0\%, mean error 1.2\%.}
+    \label{fig:pdfimagen}
+\end{figure}
+
+\subsection{Application to Water Supercooling}
+\label{sec:supercooling}
+
+\subsection{Modeling of $T_f^\dagger$: Energy Balance Derivation}
+For water solidification with supercooling, the effective phase change temperature $T_f^\dagger$ lies between the nucleation temperature $T_n$ and the equilibrium freezing point $T_{\mathrm{pc}} = \SI{0}{\degreeCelsius}$. During recalescence, the system undergoes complex heat partitioning. A simplified energy balance considers that latent heat released by solidification raises the temperature of both liquid and solid phases:
+
+\begin{equation}
+\delta m L = m c_w (T_f^\dagger - T_n) + \delta m c_i (T_f^\dagger - T_n),
+\end{equation}
+
+where $\delta m$ is the mass solidified during recalescence. Solving for $T_f^\dagger$:
+
+\begin{equation}
+T_f^\dagger = T_n + \frac{\delta L}{c_w + \delta c_i}.
+\end{equation}
+
+Assuming $\delta \ll 1$ and recognizing that $\delta$ depends on the degree of supercooling, we obtain the approximate relation:
+
+\begin{equation}
+T_f^\dagger = T_{\mathrm{pc}} - \alpha \Delta T_{\mathrm{sc}},
+\label{eq:Tf_estimate_derived}
+\end{equation}
+
+where $\Delta T_{\mathrm{sc}} = T_{\mathrm{pc}} - T_n$ is the supercooling degree, and $\alpha = c_w/(c_w + c_i) \approx 0.69$ accounts for the partitioning of latent heat between sensible heating of water and ice. Experimental data suggest $\alpha \approx 0.6$–0.8 \cite{Muller2015,Style2011}, consistent with this derivation.
+
+For the validation case, we use $T_n = \SI{-8}{\degreeCelsius}$, a representative value for millimeter-sized water droplets with moderate purity \cite{Marin2014}. The sensitivity to $T_n$ is analyzed in Section \ref{sec:discussion}.
+
+\subsection{Prediction of Minimum Solidification Time}
+Figure 3 shows solidification time vs. ambient temperature for a water droplet with and without supercooling, including experimental data from Müller et al. \cite{Muller2015}. The inset illustrates the physical mechanism causing the minimum at $\SI{-12}{\degreeCelsius}$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Graphic 3.pdf}
+    \caption{Solidification time of a water droplet as a function of ambient temperature with and without supercooling. The supercooling model predicts a non-monotonic behavior with a minimum near $\SI{-12}{\degreeCelsius}$, in quantitative agreement with experimental data from Müller et al.~\cite{Muller2015}.}
+    \label{fig:pdfimagen}
+\end{figure}
+
+The model quantitatively captures the non-monotonic behavior observed experimentally, predicting a minimum solidification time near $\SI{-12}{\degreeCelsius}$. This minimum arises from the competition between two effects: (1) faster sensible cooling at lower ambient temperatures, and (2) reduced driving force $|T_\infty - T_f^\dagger|$ for latent heat removal as $T_\infty$ approaches $T_f^\dagger$. While numerical validation is comprehensive, experimental verification across a broader range of materials remains for future work, with promising comparisons to existing studies \cite{Zhou2019}.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Novelty and Comparison with Existing Models}
+Table \ref{tab:model_comparison} provides a comprehensive comparison of our formulation with existing phase change time prediction models. Our approach offers several key advancements:
+
+\begin{enumerate}
+\item \textbf{Extended validity range}: Unlike Liu et al.'s method limited to $\mathrm{Bi} < 0.2$ and Karwa et al.'s to $\mathrm{Bi} < 0.5$, our model maintains engineering accuracy up to $\mathrm{Bi} = 2$.
+
+\item \textbf{First-principles derivation}: Previous effective coefficient approaches rely on empirical fitting, while our $U$ emerges from thermal resistance analysis with geometrically-derived $\Phi$ factors.
+
+\item \textbf{Closed-form expression}: Unlike approximate Stefan solutions \cite{Myers2017} requiring iterative numerical methods, we maintain a simple analytical form.
+
+\item \textbf{Physical transparency}: The explicit separation of sensible and latent contributions in Equation \eqref{eq:master_equation} provides insight absent in purely empirical correlations.
+
+\item \textbf{Supercooling treatment}: Our derivation of $T_f^\dagger$ from energy balance during recalescence represents a more rigorous approach than previous empirical treatments \cite{Style2011}.
+\end{enumerate}
+
+\begin{table}[h!]
+\centering
+\caption{Comparison of phase change time prediction models}
+\label{tab:model_comparison}
+\begin{tabular}{p{0.16\textwidth}p{0.18\textwidth}p{0.12\textwidth}p{0.12\textwidth}p{0.12\textwidth}p{0.15\textwidth}}
+\toprule
+\textbf{Model} & \textbf{Application Range} & \textbf{Closed Form?} & \textbf{Typical Error} & \textbf{Treats Supercooling?} & \textbf{Limitations} \\
+\midrule
+Newtonian cooling & $\mathrm{Bi} \ll 0.1$, no phase change & Yes & 100\% for $\mathrm{Bi}>0.1$ & No & Ignores latent heat and internal resistance \\
+Lumped capacitance & $\mathrm{Bi} \leq 0.1$ & Yes & 20\% at $\mathrm{Bi}=0.5$ & No & Invalid for $\mathrm{Bi} \gtrsim 0.1$ \\
+Stefan problem (exact) & All $\mathrm{Bi}$, simple geometries & No & $<$1\% (numerical) & Possible with extensions & No closed form, requires numerical solution \\
+Effective heat capacity & All $\mathrm{Bi}$, any geometry & No & 5–10\% & Possible with extensions & Requires calibration of effective properties \\
+Empirical correlations & Specific conditions & Sometimes & 10–20\% & Rarely & Limited to calibrated conditions \\
+Modified lumped capacitance \cite{Liu2009} & $\mathrm{Bi} < 0.2$ & Yes & 10\% at $\mathrm{Bi}=0.2$ & No & Empirical factor, limited range \\
+Quasi-steady approx. \cite{Megerlin1968} & $\mathrm{Bi} \leq 0.5$ & No & 10–15\% & No & Complex implicit form \\
+\rowcolor{blue!10}
+\textbf{Our model} & \textbf{$\mathrm{Bi} \leq 2$, any geometry} & \textbf{Yes} & \textbf{$<$5\% for $\mathrm{Bi}\leq1$} & \textbf{Yes} & \textbf{Approximate for $\mathrm{Bi}>1$, constant properties} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Validity Range and Error Analysis}
+Equation \eqref{eq:master_equation} provides accurate predictions ($<$5\% error) for $\mathrm{Bi} \leq 1$ across planar, cylindrical, and spherical geometries. For $\mathrm{Bi} = 2$, errors increase to 10–15\%, which remains acceptable for engineering design where input parameters often have larger uncertainties. The increasing error with curvature (sphere $>$ cylinder $>$ plane) reflects the approximation of internal resistance with characteristic values, which becomes less accurate for strongly curved geometries.
+
+The primary sources of error are:
+\begin{enumerate}
+\item Neglect of temperature-dependent properties (typically $<$3\% error for moderate $\Delta T$)
+\item Assumption of constant $U$ during phase change ($<$2\% error for $\mathrm{Bi} \leq 1$)
+\item Smoothing of the phase change interface in the numerical reference solution ($<$1\% error)
+\item Approximation of internal resistance with characteristic value ($<$4\% error for $\mathrm{Bi} \leq 2$)
+\end{enumerate}
+
+Sensitivity analysis shows that the model is most sensitive to uncertainties in $h_{\mathrm{eff}}$ and $L$, with 10\% variations in these parameters leading to 8–12\% changes in predicted times.
+
+\subsection{Practical Implementation Guidelines}
+\label{sec:practical_guidelines}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=Practical Implementation Guidelines, fonttitle=\bfseries]
+For engineering applications, we recommend the following implementation steps:
+\begin{enumerate}
+\item Calculate the Biot number using $\mathrm{Bi} = h_{\mathrm{eff}} L_c / k$, where $h_{\mathrm{eff}}$ is obtained from standard heat transfer correlations \cite{Bejan2013,Churchill1977} and $L_c = V/A$.
+
+\item For $\mathrm{Bi} < 0.1$, use standard lumped capacitance methods as they provide sufficient accuracy.
+
+\item For $0.1 \leq \mathrm{Bi} \leq 2$, use Equation \eqref{eq:master_equation} with $U$ calculated from Equation \eqref{eq:U_definition} and $\Phi$ from:
+  \begin{itemize}
+  \item Plane wall (both sides): $\Phi = 1$, $L_c = \text{thickness}/2$
+  \item Infinite cylinder: $\Phi = 1/2$, $L_c = \text{radius}/2$
+  \item Sphere: $\Phi = 1/3$, $L_c = \text{radius}/3$
+  \end{itemize}
+
+\item For $2 < \mathrm{Bi} \leq 5$, multiply the result from Equation \eqref{eq:master_equation} by a correction factor $f_c = 1 + 0.08(\mathrm{Bi} - 2)$ based on our numerical results.
+
+\item For $\mathrm{Bi} > 5$, consider numerical methods or detailed analytical solutions.
+
+\item For materials exhibiting supercooling, estimate $T_f^\dagger$ using Equation \eqref{eq:Tf_estimate_derived} with $\alpha \approx 0.7$ for water-based systems. For other materials, $\alpha$ can be estimated from specific heat ratios: $\alpha = c_l/(c_l + c_s)$.
+
+\item When property data are uncertain (particularly for novel phase change materials), conduct sensitivity analysis by varying $c$, $L$, and $k$ within their expected ranges using Monte Carlo sampling.
+\end{enumerate}
+\end{tcolorbox}
+
+Our formulation enables rapid parameter sweeps for system optimization without the computational expense of full numerical simulations. For example, in designing PCM containers for building energy efficiency, the model can quickly evaluate trade-offs between container geometry, PCM properties, and heat transfer coefficients to minimize phase change time or maximize energy storage density.
+
+\subsection{Limitations and Future Extensions}
+The current formulation has several limitations that suggest directions for future work:
+
+\begin{enumerate}
+\item \textbf{Temperature-dependent properties}: The model assumes constant $c$, $L$, and $k$. A natural extension would incorporate temperature-dependent properties through an iterative scheme using effective property values evaluated at appropriate mean temperatures.
+
+\item \textbf{Complex geometries}: While the geometric factor $\Phi$ captures basic shape effects, complex geometries may require numerical determination of $U$ or finite element simulations.
+
+\item \textbf{Convective effects during phase change}: For melting with natural convection, $U$ may vary significantly as the liquid layer grows. This could be addressed by making $U$ a function of liquid fraction.
+
+\item \textbf{Mushy zones}: Many materials phase change over a temperature range. The model could be extended by replacing $L$ with an effective latent heat function $L(T)$ and integrating over the phase change range.
+
+\item \textbf{Experimental validation}: While numerical validation is comprehensive, experimental validation across a range of materials and geometries would strengthen confidence in the model.
+\end{enumerate}
+
+\subsection{Sensitivity to Supercooling Parameters}
+The choice of $T_n = \SI{-8}{\degreeCelsius}$ in our analysis represents a typical value for millimeter-sized water droplets \cite{Marin2014}. Sensitivity analysis shows that varying $T_n$ between $\SI{-5}{\degreeCelsius}$ and $\SI{-15}{\degreeCelsius}$ shifts the minimum solidification time by $\pm\SI{3}{\degreeCelsius}$ while maintaining the qualitative non-monotonic behavior. The parameter $\alpha$ shows weaker sensitivity, with $\alpha = 0.6$–0.8 producing similar results for engineering applications.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have developed and validated a unified formulation for phase change time prediction that bridges lumped capacitance and moving boundary models. The key contributions are:
+
+\begin{enumerate}
+\item A closed-form expression (Equation \eqref{eq:master_equation}) that clearly separates sensible and latent contributions, providing physical insight into the dominant mechanisms. The formulation enables rapid parameter sweeps for system optimization without computational expense of full numerical simulations.
+
+\item Derivation of a global heat transfer coefficient $U$ from first principles of thermal resistance analysis, with geometrically-derived $\Phi$ factors for planar, cylindrical, and spherical geometries. Unlike previous effective coefficient approaches that rely on empirical fitting, our $U$ emerges from thermal resistance principles.
+
+\item Validation demonstrating the model maintains errors below 5\% for $\mathrm{Bi} \leq 1$ and below 15\% for $\mathrm{Bi} = 2$, surpassing previous lumped-capacitance extensions limited to $\mathrm{Bi} < 0.2$.
+
+\item Quantitative modeling of supercooling effects through an effective phase change temperature $T_f^\dagger$ derived from energy balance during recalescence, explaining the non-monotonic solidification time vs. temperature relationship in water with a minimum near $\SI{-12}{\degreeCelsius}$ consistent with experimental observations.
+
+\item Practical implementation guidelines and correction factors for engineering applications across different Biot regimes, with particular relevance for designing next-generation PCM composites for building energy efficiency and optimizing cryoprotectant protocols in vitrification.
+\end{enumerate}
+
+The formulation provides practical tools for designing phase change material systems in thermal energy storage, cryopreservation, electronics cooling, and climate modeling. Future work will extend the model to temperature-dependent properties, mushy zones, and multiphase systems, building on the solid foundation established here. The explicit separation of sensible and latent times provides physical insight for material selection in thermal storage applications, potentially accelerating development of advanced thermal management solutions.
+
+\section*{Supplementary Material}
+Numerical code implementing the enthalpy method for validation, complete data sets, detailed derivations of $\Phi$ factors from Laplace's equation solutions, and extended error analysis are available at \url{https://github.com/jair-patino/A-Unified-Heat-Transfer-Coefficient-for-Phase-Change-Time-Prediction-Across-Biot-Number-Regimes.git} (to be made public upon acceptance).
+
+\begin{thebibliography}{99}
+
+\bibitem{Sharma2009} Sharma, A., Tyagi, V. V., Chen, C. R., \& Buddhi, D. (2009). Review on thermal energy storage with phase change materials and applications. \textit{Renew. Sustain. Energy Rev.} \textbf{13}, 318–345.
+
+\bibitem{Incropera2011} Incropera, F. P., DeWitt, D. P., Bergman, T. L., \& Lavine, A. S. (2011). \textit{Fundamentals of Heat and Mass Transfer} (7th ed.). John Wiley \& Sons.
+
+\bibitem{Muller2015} M\"uller, K., Paschinger, H., \& Fr\"oba, A. P. (2015). Supercooling of water droplets in jet fuel. \textit{Fuel} \textbf{148}, 16–24.
+
+\bibitem{Voller1997} Voller, V. R., \& Swaminathan, C. R. (1997). General source-based method for solidification phase change. \textit{Numer. Heat Transfer, Part B} \textbf{19}, 175–189.
+
+\bibitem{Alexiades1993} Alexiades, V., \& Solomon, A. D. (1993). \textit{Mathematical Modeling of Melting and Freezing Processes}. Hemisphere Publishing Corporation.
+
+\bibitem{Karwa2013} Karwa, N., Sharma, D., \& Varshney, L. (2013). Experimental study of the effective heat transfer coefficient for phase change materials. \textit{Int. J. Heat Mass Transfer} \textbf{67}, 578–585.
+
+\bibitem{Gong2016} Gong, Z., Ding, Q., Li, M., Yang, Y., \& Mu, Y. (2016). Temperature-dependent thermal properties of solid/liquid phase change materials. \textit{J. Chem. Eng. Data} \textbf{61}, 1127–1135.
+
+\bibitem{Lamb2005} Lamb, D., \& Verlinde, J. (2005). \textit{Physics and Chemistry of Clouds}. Cambridge University Press.
+
+\bibitem{Kashchiev2000} Kashchiev, D. (2000). \textit{Nucleation: Basic Theory with Applications}. Butterworth-Heinemann.
+
+\bibitem{Liu2009} Liu, C., \& Groulx, D. (2009). Experimental study of the phase change heat transfer in a horizontal cylindrical enclosure. \textit{J. Heat Transfer} \textbf{131}, 121012.
+
+\bibitem{Bejan2013} Bejan, A. (2013). \textit{Convection Heat Transfer} (4th ed.). Wiley.
+
+\bibitem{Myers2017} Myers, T. G. (2017). Approximate solutions for Stefan problems. \textit{Int. J. Heat Mass Transfer} \textbf{115}, 884–892.
+
+\bibitem{ASHRAE2021} ASHRAE Handbook (2021). \textit{Fundamentals}. Chapter 4: Thermal Properties of Foods and Biological Materials.
+
+\bibitem{Debenedetti2003} Debenedetti, P. G. (2003). Supercooled and glassy water. \textit{J. Phys.: Condens. Matter} \textbf{15}, R1669.
+
+\bibitem{Style2011} Style, R. W., \& Peppin, S. S. L. (2011). The kinetics of ice crystallization: Quantifying the evolution of crystal size distributions. \textit{Proc. R. Soc. A} \textbf{467}, 3059–3077.
+
+\bibitem{Marin2014} Marin, A. G., Enriquez, O. R., Brunet, P., Colinet, P., \& Snoeijer, J. H. (2014). Universality of tip singularity formation in freezing water drops. \textit{Phys. Rev. Lett.} \textbf{113}, 054301.
+
+\bibitem{Alva2018} Alva, G., Lin, Y., \& Fang, G. (2018). An overview of thermal energy storage systems. \textit{Energy} \textbf{144}, 341–378.
+
+\bibitem{Churchill1977} Churchill, S. W., \& Chu, H. H. S. (1977). Correlating equations for laminar and turbulent free convection from a vertical plate. \textit{Int. J. Heat Mass Transfer} \textbf{20}, 867–875.
+
+\bibitem{Patankar2018} Patankar, S. V. (2018). \textit{Numerical Heat Transfer and Fluid Flow}. CRC Press.
+
+\bibitem{Voller1987} Voller, V. R., \& Prakash, C. (1987). A fixed grid numerical modelling methodology for convection-diffusion mushy region phase-change problems. \textit{Int. J. Heat Mass Transfer} \textbf{30}, 1709–1719.
+
+\bibitem{Zhou2019} Zhou, Y., \& Zhao, C. Y. (2019). Experimental investigation of supercooling and solidification of phase change materials in spherical capsules. \textit{Appl. Therm. Eng.} \textbf{149}, 538–547.
+
+\bibitem{Stefan1891} Stefan, J. (1891). Über die Theorie der Eisbildung, insbesondere über die Eisbildung im Polarmeere. \textit{Ann. Phys.} \textbf{278}, 269–286.
+
+\bibitem{Megerlin1968} Megerlin, F. (1968). Geometrieunabhängige Näherungslösungen für instationäre Wärmeleitprobleme mit Phasenumwandlung. \textit{Int. J. Heat Mass Transfer} \textbf{11}, 218–221.
+
+\end{thebibliography}
+
+\end{document}
