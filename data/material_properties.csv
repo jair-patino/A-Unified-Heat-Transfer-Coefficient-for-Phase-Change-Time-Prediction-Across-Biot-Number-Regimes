@@ -1,0 +1,15 @@
+material,phase,T_melt,T_freeze,rho,k,c,L,alpha,beta,source
+water,liquid,0.0,0.0,997.0,0.613,4182.0,334000,1.47e-7,2.1e-4,Incropera 2011
+water,solid,0.0,0.0,916.7,2.22,2050.0,334000,1.18e-6,N/A,Incropera 2011
+paraffin_RT25,liquid,25.0,25.0,760.0,0.15,2200.0,180000,8.96e-8,1.2e-3,Sharma 2009
+paraffin_RT25,solid,25.0,25.0,880.0,0.20,1800.0,180000,1.26e-7,N/A,Sharma 2009
+paraffin_RT42,liquid,42.0,42.0,780.0,0.17,2400.0,200000,9.09e-8,1.1e-3,Sharma 2009
+paraffin_RT42,solid,42.0,42.0,900.0,0.22,1900.0,200000,1.28e-7,N/A,Sharma 2009
+gallium,liquid,29.76,29.76,6095.0,30.0,380.0,80100,1.30e-5,1.2e-4,Alexiades 1993
+gallium,solid,29.76,29.76,5900.0,40.6,370.0,80100,1.86e-5,N/A,Alexiades 1993
+ice_cream,liquid,-5.0,-5.0,1050.0,0.35,3500.0,250000,9.52e-8,1.5e-3,ASHRAE 2021
+ice_cream,solid,-5.0,-5.0,1150.0,0.45,1800.0,250000,2.17e-7,N/A,ASHRAE 2021
+salt_hydrate,liquid,32.0,32.0,1450.0,0.55,2500.0,200000,1.52e-7,1.0e-3,Zhou 2019
+salt_hydrate,solid,32.0,32.0,1550.0,0.70,2000.0,200000,2.26e-7,N/A,Zhou 2019
+n-octadecane,liquid,28.0,28.0,770.0,0.15,2190.0,243500,8.90e-8,1.0e-3,Zhou 2019
+n-octadecane,solid,28.0,28.0,850.0,0.20,1940.0,243500,1.21e-7,N/A,Zhou 2019
